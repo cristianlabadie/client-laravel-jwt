@@ -12,13 +12,19 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: "stylesheet", href: "https://use.fontawesome.com/releases/v5.6.3/css/all.css", integrity: "sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin:"anonymous" }
     ]
   },
   /*
   ** Customize the progress-bar color
   */
   loading: { color: '#fff' },
+  router: {
+    middleware: [
+      'clearValidationErrors'
+    ]
+  },
   /*
   ** Global CSS
   */
@@ -28,7 +34,13 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    './plugins/mixins/validation',
+    './plugins/mixins/user',
+    './plugins/axios'
   ],
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:8000/api/'
+  },
 
   auth: {
     strategies: {
@@ -41,15 +53,19 @@ export default {
             url: 'me', method: 'get', propertyName: 'data'
           },
           logout: {
-            url: 'logout', method: 'get'
+            method: 'get',
+            url: 'auth/logout', method: 'get'
           }
         }
-      },
-      redirect: {
-        login: '/auth/login',
-        home: '/'
       }
-    }
+    },
+    redirect: {
+      login: '/auth/login',
+      home: '/'
+    },
+    plugins: [
+      './plugins/auth'
+    ]
   },
   /*
   ** Nuxt.js dev-modules
@@ -67,6 +83,10 @@ export default {
 
     '@nuxtjs/auth'
   ],
+  bootstrapVue: {
+    bootstrapCSS: true, // or `css`
+    bootstrapVueCSS: true // or `bvCSS`
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
